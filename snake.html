@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Math Snake AI | Amna Ijaz Zaibunnisa</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #08152f, #241052, #063f3d);
+    color: white;
+}
+
+/* ================= TITLE PAGE ================= */
+
+#titlePage {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.cover {
+    width: 100%;
+    max-width: 700px;
+    padding: 45px 30px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.10);
+    border: 2px solid #7cffcb;
+    box-shadow: 0 0 40px rgba(124,255,203,0.25);
+    backdrop-filter: blur(10px);
+}
+
+.snake-icon {
+    font-size: 100px;
+    animation: float 2s infinite;
+}
+
+@keyframes float {
+    0%,100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.cover h1 {
+    font-size: 48px;
+    color: #7cffcb;
+    margin: 15px 0;
+    text-shadow: 0 0 20px #00ffae;
+}
+
+.cover h2 {
+    font-size: 25px;
+    color: #ffd166;
+    margin-bottom: 20px;
+}
+
+.cover p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #eeeeee;
+}
+
+.student-card {
+    margin: 25px auto;
+    padding: 18px;
+    max-width: 500px;
+    border-radius: 18px;
+    background: rgba(0,0,0,0.25);
+}
+
+.student-card p {
+    font-size: 17px;
+}
+
+.start-game {
+    margin-top: 20px;
+    padding: 16px 45px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #ff4d8d, #ff8c42);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255,77,141,0.5);
+    transition: 0.3s;
+}
+
+.start-game:hover {
+    transform: scale(1.08);
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.feature {
+    background: rgba(255,255,255,0.1);
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+}
+
+
+/* ================= GAME ================= */
+
+#gamePage {
+    display: none;
+    min-height: 100vh;
+    padding: 20px 15px;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    text-align: center;
+}
+
+.game-container h1 {
+    font-size: 36px;
+    color: #7cffcb;
+    text-shadow: 0 0 15px #00ffae;
+}
+
+.subtitle {
+    margin: 5px 0 5px;
+    color: #ddd;
+}
+
+.creator {
+    color: #ffd166;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.info {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.info-box {
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 10px 5px;
+    font-weight: bold;
+}
+
+.info-box span {
+    display: block;
+    color: #7cffcb;
+    font-size: 20px;
+    margin-top: 3px;
+}
+
+.question-box {
+    background: rgba(255,255,255,0.12);
+    border: 2px solid #7cffcb;
+    border-radius: 15px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.question {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.instruction {
+    font-size: 13px;
+    color: #ddd;
+    margin-top: 5px;
+}
+
+canvas {
+    width: 100%;
+    max-width: 600px;
+    background: #07111f;
+    border: 4px solid #7cffcb;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(0,255,174,0.35);
+    display: block;
+    margin: auto;
+}
+
+.controls {
+    margin: 15px auto;
+    width: 190px;
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    gap: 5px;
+    justify-content: center;
+}
+
+.control {
+    height: 55px;
+    border: none;
+    border-radius: 12px;
+    background: #7cffcb;
+    color: #08121f;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.control:active {
+    transform: scale(0.9);
+}
+
+.empty {
+    visibility: hidden;
+}
+
+.message {
+    min-height: 45px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 5px;
+    color: #ffe082;
+}
+
+.start-btn {
+    margin-top: 10px;
+    padding: 13px 30px;
+    border: none;
+    border-radius: 25px;
+    background: #ff4d8d;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.home-btn {
+    margin-top: 10px;
+    padding: 10px 22px;
+    border: 2px solid #7cffcb;
+    border-radius: 20px;
+    background: transparent;
+    color: #7cffcb;
+    cursor: pointer;
+}
+
+@media(max-width:500px) {
+
+    .cover h1 {
+        font-size: 34px;
+    }
+
+    .snake-icon {
+        font-size: 75px;
+    }
+
+    .info-box {
+        font-size: 12px;
+    }
+
+    .info-box span {
+        font-size: 17px;
+    }
+
+    .question {
+        font-size: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- =================================================
+     TITLE PAGE
+================================================= -->
+
+<section id="titlePage">
+
+    <div class="cover">
+
+        <div class="snake-icon">
+            🐍
+        </div>
+
+        <h1>Math Snake AI</h1>
+
+        <h2>🧠 A Fun Mathematics Game</h2>
+
+        <p>
+            Welcome to <b>Math Snake AI!</b>
+            <br>
+            Solve mathematical questions,
+            find the correct answer,
+            and guide your snake to victory.
+        </p>
+
+        <div class="student-card">
+
+            <p>
+                👩‍🎓 <b>Student Name:</b> Amna Ijaz & Zaibunnisa
+            </p>
+
+            <p>
+                🎓 <b>Program:</b>
+                BS Computational Mathematics with Artificial Intelligence
+            </p>
+
+            <p>
+                📚 <b>Field:</b>
+                Mathematics + Artificial Intelligence
+            </p>
+
+            <p>
+                💻 <b>Technology:</b>
+                HTML, CSS & JavaScript
+            </p>
+
+        </div>
+
+        <div class="features">
+
+            <div class="feature">🐍 Snake Game</div>
+            <div class="feature">🧮 Mathematics</div>
+            <div class="feature">🧠 AI Concept</div>
+            <div class="feature">🏆 Levels</div>
+            <div class="feature">❤️ Lives</div>
+            <div class="feature">🪙 Coins</div>
+
+        </div>
+
+        <button class="start-game" onclick="openGame()">
+            🎮 START MATH SNAKE
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     GAME PAGE
+================================================= -->
+
+<section id="gamePage">
+
+    <div class="game-container">
+
+        <h1>🐍 Math Snake AI</h1>
+
+        <p class="subtitle">
+            Eat the correct answer!
+        </p>
+
+        <p class="creator">
+            Created by Amna Ijaz ❤️
+        </p>
+
+        <div class="info">
+
+            <div class="info-box">
+                🏆 Score
+                <span id="score">0</span>
+            </div>
+
+            <div class="info-box">
+                ❤️ Lives
+                <span id="lives">3</span>
+            </div>
+
+            <div class="info-box">
+                ⭐ Level
+                <span id="level">1</span>
+            </div>
+
+            <div class="info-box">
+                🪙 Coins
+                <span id="coins">0</span>
+            </div>
+
+        </div>
+
+        <div class="question-box">
+
+            <div class="question" id="question">
+                Press START to begin!
+            </div>
+
+            <div class="instruction">
+                🐍 Move the snake and eat the correct answer.
+            </div>
+
+        </div>
+
+        <canvas
+            id="gameCanvas"
+            width="600"
+            height="600">
+        </canvas>
+
+        <div class="controls">
+
+            <button class="control empty"></button>
+
+            <button
+                class="control"
+                onclick="changeDirection('up')">
+                ⬆️
+            </button>
+
+            <button class="control empty"></button>
+
+            <button
+                class="control"
+                onclick="changeDirection('left')">
+                ⬅️
+            </button>
+
+            <button
+                class="control"
+                onclick="changeDirection('down')">
+                ⬇️
+            </button>
+
+            <button
+                class="control"
+                onclick="changeDirection('right')">
+                ➡️
+            </button>
+
+        </div>
+
+        <div class="message" id="message">
+            Ready for the Math Snake challenge? 🐍
+        </div>
+
+        <button
+            class="start-btn"
+            onclick="startGame()">
+            🎮 START GAME
+        </button>
+
+        <br>
+
+        <button
+            class="home-btn"
+            onclick="goHome()">
+            🏠 Back to Title Page
+        </button>
+
+    </div>
+
+</section>
+
+
+<script>
+
+/* =================================================
+   TITLE PAGE FUNCTIONS
+================================================= */
+
+function openGame() {
+
+    document.getElementById("titlePage").style.display =
+        "none";
+
+    document.getElementById("gamePage").style.display =
+        "block";
+
+    window.scrollTo(0, 0);
+
+}
+
+
+function goHome() {
+
+    gameRunning = false;
+
+    clearInterval(gameTimer);
+
+    document.getElementById("gamePage").style.display =
+        "none";
+
+    document.getElementById("titlePage").style.display =
+        "flex";
+
+    window.scrollTo(0, 0);
+
+}
+
+
+/* =================================================
+   GAME VARIABLES
+================================================= */
+
+const canvas =
+    document.getElementById("gameCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const grid = 30;
+
+const tileCount =
+    canvas.width / grid;
+
+let snake = [];
+
+let direction = {
+    x: 1,
+    y: 0
+};
+
+let nextDirection = {
+    x: 1,
+    y: 0
+};
+
+let answerFoods = [];
+
+let correctAnswer = 0;
+
+let score = 0;
+let lives = 3;
+let level = 1;
+let coins = 0;
+
+let gameRunning = false;
+
+let gameTimer;
+
+let questionNumber = 0;
+
+let audioContext;
+
+
+/* =================================================
+   SOUND
+================================================= */
+
+function playSound(frequency, duration = 0.1) {
+
+    try {
+
+        if (!audioContext) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+        }
+
+        const oscillator =
+            audioContext.createOscillator();
+
+        const gain =
+            audioContext.createGain();
+
+        oscillator.frequency.value =
+            frequency;
+
+        oscillator.type = "sine";
+
+        gain.gain.value = 0.08;
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            audioContext.destination
+        );
+
+        oscillator.start();
+
+        oscillator.stop(
+            audioContext.currentTime +
+            duration
+        );
+
+    } catch(e) {}
+
+}
+
+
+/* =================================================
+   START GAME
+================================================= */
+
+function startGame() {
+
+    snake = [
+        {x: 10, y: 10},
+        {x: 9, y: 10},
+        {x: 8, y: 10}
+    ];
+
+    direction = {
+        x: 1,
+        y: 0
+    };
+
+    nextDirection = {
+        x: 1,
+        y: 0
+    };
+
+    score = 0;
+    lives = 3;
+    level = 1;
+    coins = 0;
+
+    questionNumber = 0;
+
+    gameRunning = true;
+
+    document.getElementById("message").innerText =
+        "Go! Solve the math question! 🧠🐍";
+
+    createQuestion();
+
+    clearInterval(gameTimer);
+
+    gameTimer =
+        setInterval(
+            gameLoop,
+            getSpeed()
+        );
+
+    updateInfo();
+
+    draw();
+
+}
+
+
+/* =================================================
+   SPEED
+================================================= */
+
+function getSpeed() {
+
+    return Math.max(
+        80,
+        180 - ((level - 1) * 15)
+    );
+
+}
+
+
+/* =================================================
+   MATH QUESTION
+================================================= */
+
+function createQuestion() {
+
+    questionNumber++;
+
+    let maxNumber =
+        10 + level * 10;
+
+    let a =
+        Math.floor(
+            Math.random() *
+            maxNumber
+        ) + 1;
+
+    let b =
+        Math.floor(
+            Math.random() *
+            maxNumber
+        ) + 1;
+
+    let operators =
+        ["+", "-", "×"];
+
+    if (level >= 3) {
+
+        operators.push("÷");
+
+    }
+
+    let operator =
+        operators[
+            Math.floor(
+                Math.random() *
+                operators.length
+            )
+        ];
+
+    let answer;
+
+    if (operator === "+") {
+
+        answer = a + b;
+
+    }
+
+    else if (operator === "-") {
+
+        if (b > a) {
+
+            [a, b] =
+                [b, a];
+
+        }
+
+        answer = a - b;
+
+    }
+
+    else if (operator === "×") {
+
+        answer = a * b;
+
+    }
+
+    else {
+
+        answer =
+            Math.floor(
+                Math.random() * 10
+            ) + 1;
+
+        b =
+            Math.floor(
+                Math.random() * 10
+            ) + 1;
+
+        a = answer * b;
+
+    }
+
+    correctAnswer = answer;
+
+    document.getElementById(
+        "question"
+    ).innerText =
+        "🧠 " +
+        a +
+        " " +
+        operator +
+        " " +
+        b +
+        " = ?";
+
+    createAnswers();
+
+}
+
+
+/* =================================================
+   ANSWERS
+================================================= */
+
+function createAnswers() {
+
+    answerFoods = [];
+
+    let answers = [
+        correctAnswer
+    ];
+
+    while (answers.length < 3) {
+
+        let wrong =
+            correctAnswer +
+            Math.floor(
+                Math.random() * 15
+            ) - 7;
+
+        if (
+            wrong >= 0 &&
+            !answers.includes(wrong)
+        ) {
+
+            answers.push(wrong);
+
+        }
+
+    }
+
+    answers.sort(
+        () => Math.random() - 0.5
+    );
+
+    for (let answer of answers) {
+
+        let position;
+
+        do {
+
+            position = {
+
+                x:
+                    Math.floor(
+                        Math.random() *
+                        tileCount
+                    ),
+
+                y:
+                    Math.floor(
+                        Math.random() *
+                        tileCount
+                    )
+
+            };
+
+        }
+
+        while (
+            snake.some(
+                part =>
+                    part.x === position.x &&
+                    part.y === position.y
+            )
+        );
+
+        answerFoods.push({
+
+            x: position.x,
+
+            y: position.y,
+
+            value: answer
+
+        });
+
+    }
+
+}
+
+
+/* =================================================
+   GAME LOOP
+================================================= */
+
+function gameLoop() {
+
+    if (!gameRunning)
+        return;
+
+    direction =
+        nextDirection;
+
+    let head = {
+
+        x:
+            snake[0].x +
+            direction.x,
+
+        y:
+            snake[0].y +
+            direction.y
+
+    };
+
+
+    if (
+        head.x < 0 ||
+        head.x >= tileCount ||
+        head.y < 0 ||
+        head.y >= tileCount
+    ) {
+
+        loseLife(
+            "💥 You hit the wall!"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        snake.some(
+            part =>
+                part.x === head.x &&
+                part.y === head.y
+        )
+    ) {
+
+        loseLife(
+            "🐍 Oops! You hit yourself!"
+        );
+
+        return;
+
+    }
+
+
+    snake.unshift(head);
+
+
+    let foodIndex =
+        answerFoods.findIndex(
+            food =>
+                food.x === head.x &&
+                food.y === head.y
+        );
+
+
+    if (foodIndex !== -1) {
+
+        let food =
+            answerFoods[
+                foodIndex
+            ];
+
+        if (
+            food.value ===
+            correctAnswer
+        ) {
+
+            eatCorrectAnswer();
+
+        }
+
+        else {
+
+            eatWrongAnswer();
+
+        }
+
+    }
+
+    else {
+
+        snake.pop();
+
+    }
+
+
+    draw();
+
+}
+
+
+/* =================================================
+   CORRECT ANSWER
+================================================= */
+
+function eatCorrectAnswer() {
+
+    score += 10;
+
+    coins += 2;
+
+    document.getElementById(
+        "message"
+    ).innerText =
+        "🎉 CORRECT! Amazing! +10 points";
+
+    playSound(
+        700,
+        0.15
+    );
+
+    answerFoods = [];
+
+
+    if (
+        score >=
+        level * 50
+    ) {
+
+        level++;
+
+        document.getElementById(
+            "message"
+        ).innerText =
+            "🚀 LEVEL UP! Welcome to Level " +
+            level +
+            "!";
+
+        playSound(
+            1000,
+            0.2
+        );
+
+        clearInterval(
+            gameTimer
+        );
+
+        gameTimer =
+            setInterval(
+                gameLoop,
+                getSpeed()
+            );
+
+    }
+
+
+    createQuestion();
+
+    updateInfo();
+
+}
+
+
+/* =================================================
+   WRONG ANSWER
+================================================= */
+
+function eatWrongAnswer() {
+
+    lives--;
+
+    score =
+        Math.max(
+            0,
+            score - 5
+        );
+
+    document.getElementById(
+        "message"
+    ).innerText =
+        "❌ Wrong answer! Try again!";
+
+    playSound(
+        200,
+        0.2
+    );
+
+    answerFoods = [];
+
+
+    if (lives <= 0) {
+
+        endGame();
+
+        return;
+
+    }
+
+
+    createQuestion();
+
+    updateInfo();
+
+}
+
+
+/* =================================================
+   LOSE LIFE
+================================================= */
+
+function loseLife(text) {
+
+    lives--;
+
+    document.getElementById(
+        "message"
+    ).innerText =
+        text;
+
+    playSound(
+        150,
+        0.2
+    );
+
+    snake = [
+        {x: 10, y: 10},
+        {x: 9, y: 10},
+        {x: 8, y: 10}
+    ];
+
+    direction = {
+        x: 1,
+        y: 0
+    };
+
+    nextDirection = {
+        x: 1,
+        y: 0
+    };
+
+
+    if (lives <= 0) {
+
+        endGame();
+
+        return;
+
+    }
+
+
+    updateInfo();
+
+}
+
+
+/* =================================================
+   END GAME
+================================================= */
+
+function endGame() {
+
+    gameRunning = false;
+
+    clearInterval(
+        gameTimer
+    );
+
+    document.getElementById(
+        "question"
+    ).innerText =
+        "💀 GAME OVER";
+
+    document.getElementById(
+        "message"
+    ).innerHTML =
+        "🏆 Final Score: <b>" +
+        score +
+        "</b><br>" +
+        "Press START to play again!";
+
+    playSound(
+        100,
+        0.5
+    );
+
+    drawGameOver();
+
+}
+
+
+/* =================================================
+   DRAW
+================================================= */
+
+function draw() {
+
+    ctx.fillStyle =
+        "#07111f";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.strokeStyle =
+        "rgba(255,255,255,0.04)";
+
+
+    for (
+        let i = 0;
+        i <= tileCount;
+        i++
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            i * grid,
+            0
+        );
+
+        ctx.lineTo(
+            i * grid,
+            canvas.height
+        );
+
+        ctx.stroke();
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            i * grid
+        );
+
+        ctx.lineTo(
+            canvas.width,
+            i * grid
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /* ANSWERS */
+
+    for (
+        let food of answerFoods
+    ) {
+
+        let isCorrect =
+            food.value ===
+            correctAnswer;
+
+        ctx.beginPath();
+
+        ctx.arc(
+
+            food.x * grid +
+            grid / 2,
+
+            food.y * grid +
+            grid / 2,
+
+            12,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+        ctx.fillStyle =
+            isCorrect
+            ? "#ffd166"
+            : "#ff5c8a";
+
+        ctx.fill();
+
+
+        ctx.fillStyle =
+            "#111";
+
+        ctx.font =
+            "bold 13px Arial";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.textBaseline =
+            "middle";
+
+        ctx.fillText(
+
+            food.value,
+
+            food.x * grid +
+            grid / 2,
+
+            food.y * grid +
+            grid / 2
+
+        );
+
+    }
+
+
+    /* SNAKE */
+
+    snake.forEach(
+        (part, index) => {
+
+            ctx.fillStyle =
+                index === 0
+                ? "#7cffcb"
+                : "#39b982";
+
+            ctx.fillRect(
+
+                part.x * grid + 2,
+
+                part.y * grid + 2,
+
+                grid - 4,
+
+                grid - 4
+
+            );
+
+        }
+    );
+
+
+    /* EYES */
+
+    if (snake.length > 0) {
+
+        let head =
+            snake[0];
+
+        ctx.fillStyle =
+            "#111";
+
+        ctx.beginPath();
+
+        ctx.arc(
+
+            head.x * grid + 10,
+
+            head.y * grid + 10,
+
+            3,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+        ctx.fill();
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+
+            head.x * grid + 20,
+
+            head.y * grid + 10,
+
+            3,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+        ctx.fill();
+
+    }
+
+}
+
+
+/* =================================================
+   GAME OVER SCREEN
+================================================= */
+
+function drawGameOver() {
+
+    draw();
+
+    ctx.fillStyle =
+        "rgba(0,0,0,0.65)";
+
+    ctx.fillRect(
+
+        0,
+        0,
+        canvas.width,
+        canvas.height
+
+    );
+
+    ctx.fillStyle =
+        "#fff";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.font =
+        "bold 42px Arial";
+
+    ctx.fillText(
+
+        "GAME OVER",
+
+        canvas.width / 2,
+
+        canvas.height / 2 - 20
+
+    );
+
+    ctx.font =
+        "22px Arial";
+
+    ctx.fillText(
+
+        "Score: " + score,
+
+        canvas.width / 2,
+
+        canvas.height / 2 + 25
+
+    );
+
+}
+
+
+/* =================================================
+   DIRECTION
+================================================= */
+
+function changeDirection(dir) {
+
+    if (!gameRunning)
+        return;
+
+
+    if (
+        dir === "up" &&
+        direction.y !== 1
+    ) {
+
+        nextDirection = {
+            x: 0,
+            y: -1
+        };
+
+    }
+
+
+    if (
+        dir === "down" &&
+        direction.y !== -1
+    ) {
+
+        nextDirection = {
+            x: 0,
+            y: 1
+        };
+
+    }
+
+
+    if (
+        dir === "left" &&
+        direction.x !== 1
+    ) {
+
+        nextDirection = {
+            x: -1,
+            y: 0
+        };
+
+    }
+
+
+    if (
+        dir === "right" &&
+        direction.x !== -1
+    ) {
+
+        nextDirection = {
+            x: 1,
+            y: 0
+        };
+
+    }
+
+}
+
+
+/* =================================================
+   KEYBOARD
+================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "ArrowUp"
+        ) {
+
+            changeDirection(
+                "up"
+            );
+
+        }
+
+        else if (
+            event.key ===
+            "ArrowDown"
+        ) {
+
+            changeDirection(
+                "down"
+            );
+
+        }
+
+        else if (
+            event.key ===
+            "ArrowLeft"
+        ) {
+
+            changeDirection(
+                "left"
+            );
+
+        }
+
+        else if (
+            event.key ===
+            "ArrowRight"
+        ) {
+
+            changeDirection(
+                "right"
+            );
+
+        }
+
+        else if (
+            event.key === " " &&
+            !gameRunning
+        ) {
+
+            startGame();
+
+        }
+
+    }
+);
+
+
+/* =================================================
+   UPDATE INFORMATION
+================================================= */
+
+function updateInfo() {
+
+    document.getElementById(
+        "score"
+    ).innerText =
+        score;
+
+    document.getElementById(
+        "lives"
+    ).innerText =
+        lives;
+
+    document.getElementById(
+        "level"
+    ).innerText =
+        level;
+
+    document.getElementById(
+        "coins"
+    ).innerText =
+        coins;
+
+}
+
+
+/* INITIAL SCREEN */
+
+draw();
+
+</script>
+
+</body>
+</html>
+```
